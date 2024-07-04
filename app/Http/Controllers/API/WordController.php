@@ -16,7 +16,6 @@ class WordController extends Controller
 {
     protected $translator;
     protected $pronunciation;
-
     protected $audio_downloader;
     public function __construct()
     {
@@ -27,15 +26,16 @@ class WordController extends Controller
     public function __invoke(Request $request)
     {
         $validated = $request->validate([
-            'language' => 'required|string|max:2',
             'word_original' => 'required|string',
+            'language' => 'required|string|max:2',
+            'target_language' => 'required|string|max:5',
         ]);
         try {
             // storage word model
             $word = Word::create($validated);
 
             // translate word
-            $translated = $this->translator->translate($validated['word_original'], 'pt-BR');
+            $translated = $this->translator->translate($validated['word_original'], $validated['target_language']);
 
             // link audio
             $audio_path = $this->pronunciation->getAudio($validated['word_original'], $validated['language'], 1);

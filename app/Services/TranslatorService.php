@@ -32,8 +32,8 @@ class TranslatorService implements TranslatorContract
                 null,
                 $language_target,
             );
-
             return $translate[0]->text;
+
         } catch (DeepLException $e) {
             Log::warning('Translate Error: ' . $e->getMessage());
             return 'Error translating word..';
