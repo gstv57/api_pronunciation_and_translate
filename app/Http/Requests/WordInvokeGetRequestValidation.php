@@ -30,8 +30,8 @@ class WordInvokeGetRequestValidation extends FormRequest
     {
         return [
             'word.required' => 'The word is required.',
-            'word.string' => 'The word must be a string.',
-            'word.exists' => 'Word not exist in database.',
+            'word.string'   => 'The word must be a string.',
+            'word.exists'   => 'Word not exist in database.',
         ];
     }
 }

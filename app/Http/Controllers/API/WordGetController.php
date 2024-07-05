@@ -17,9 +17,9 @@ class WordGetController extends Controller
                 ->with('pronunciations')
                 ->first();
 
-        }catch(Exception $exception) {
+        } catch(Exception $exception) {
             return response()->json([
-                'message' => 'Error: ' . $exception->getMessage()
+                'message' => 'Error: ' . $exception->getMessage(),
             ], 500);
         }
     }

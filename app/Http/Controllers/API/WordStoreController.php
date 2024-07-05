@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\WordInvokeStoreRequestValidation;
-use Exception;
-use App\Models\Word;
-use Illuminate\Support\Facades\Log;
+use App\Contracts\{PronunciationContract, TranslatorContract};
 use App\Http\Controllers\Controller;
-use App\Contracts\TranslatorContract;
-use Illuminate\Support\Facades\Storage;
-use App\Contracts\PronunciationContract;
+use App\Http\Requests\WordInvokeStoreRequestValidation;
+use App\Models\Word;
 use App\Services\AudioDownloaderService;
+use Exception;
+use Illuminate\Support\Facades\{Log, Storage};
 
 class WordStoreController extends Controller
 {
     protected $translator;
+
     protected $pronunciation;
+
     protected $audio_downloader;
     public function __construct()
     {
-        $this->translator = app(TranslatorContract::class);
-        $this->pronunciation = app(PronunciationContract::class);
-        $this->audio_downloader  = new AudioDownloaderService();
+        $this->translator       = app(TranslatorContract::class);
+        $this->pronunciation    = app(PronunciationContract::class);
+        $this->audio_downloader = new AudioDownloaderService();
     }
     public function __invoke(WordInvokeStoreRequestValidation $request)
     {
@@ -31,7 +31,6 @@ class WordStoreController extends Controller
 
             // link audio pronunciation
             $audio_path = $this->pronunciation->getAudio($request->input('word_original'), $translated['detect_language'], 1);
-
             // download audio local
             $audio_content = $this->audio_downloader->download($audio_path, $request->input('word_original'));
 
@@ -40,8 +39,8 @@ class WordStoreController extends Controller
 
             // storage word model and pronunciation
             $word = Word::create([
-                'word_original' => $request->input('word_original'),
-                'language' => $translated['detect_language'],
+                'word_original'   => $request->input('word_original'),
+                'language'        => $translated['detect_language'],
                 'word_translated' => $translated['text'],
             ]);
             $word->pronunciations()->create([
@@ -52,13 +51,13 @@ class WordStoreController extends Controller
 
             return response()->json([
                 'word_translated' => $translated['text'],
-                'audio_path' => $path_audio_s3,
-                'message' => 'Pronunciation link with expiration time of 15 minutes. Enjoy and listen!'
+                'audio_path'      => $path_audio_s3,
+                'message'         => 'Pronunciation link with expiration time of 15 minutes. Enjoy and listen!',
             ]);
 
         } catch (Exception $exception) {
             return response()->json([
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ], 500);
         }
     }
@@ -71,6 +70,7 @@ class WordStoreController extends Controller
             return $fileName;
         } catch (Exception $e) {
             Log::error("Erro ao salvar áudio $fileName no S3: " . $e->getMessage());
+
             return null;
         }
     }

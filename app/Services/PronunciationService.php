@@ -9,20 +9,20 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class PronunciationService implements PronunciationContract
 {
-
     private $api_key;
+
     private $proxy;
     public function __construct()
     {
         $this->api_key = getenv('FORVO_API_KEY');
-        $this->proxy = getenv('PROXYSCRAPE');
+        $this->proxy   = getenv('PROXYSCRAPE');
     }
 
     public function getAudio(string $word, string $language, $limit = 1): string
     {
-
-        $url = "https://apifree.forvo.com/key/{$this->api_key}/format/json/action/word-pronunciations/word/{$word}/language/{$language}/limit/{$limit}";
+        $url    = "https://apifree.forvo.com/key/{$this->api_key}/format/json/action/word-pronunciations/word/{$word}/language/{$language}/limit/{$limit}";
         $guzzle = new Client();
+
         try {
             $response = $guzzle->get($url, [
                 'headers' => [

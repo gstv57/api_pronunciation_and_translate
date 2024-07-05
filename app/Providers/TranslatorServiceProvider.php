@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\TranslatorService;
 use App\Contracts\TranslatorContract;
+use App\Services\TranslatorService;
 use Illuminate\Support\ServiceProvider;
 
 class TranslatorServiceProvider extends ServiceProvider
