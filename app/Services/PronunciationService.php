@@ -17,7 +17,9 @@ class PronunciationService implements PronunciationContract
         $this->api_key = getenv('FORVO_API_KEY');
         $this->proxy   = getenv('PROXYSCRAPE');
     }
-
+    /**
+     * @throws Exception
+     */
     public function getAudio(string $word, string $language, $limit = 1): string
     {
         $url    = "https://apifree.forvo.com/key/{$this->api_key}/format/json/action/word-pronunciations/word/{$word}/language/{$language}/limit/{$limit}";
@@ -36,9 +38,9 @@ class PronunciationService implements PronunciationContract
             return $data['items'][0]['pathmp3'];
 
         } catch (Exception $e) {
-            return 'error function:' . $e->getMessage();
+            throw new Exception('error function: ' . $e->getMessage());
         } catch (GuzzleException $e) {
-            return 'error guzzle:' . $e->getMessage();
+            throw new Exception('error guzzle : ' . $e->getMessage());
         }
     }
 }

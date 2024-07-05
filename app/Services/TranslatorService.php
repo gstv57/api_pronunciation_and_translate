@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\TranslatorContract;
 use DeepL\{DeepLException, Translator};
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class TranslatorService implements TranslatorContract
@@ -12,23 +13,24 @@ class TranslatorService implements TranslatorContract
 
     protected Translator $instance;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->api_key = getenv('DEEPL_API_KEY');
 
         try {
             $this->instance = new Translator($this->api_key);
-        } catch (\Exception $exception) {
-            Log::warning('DeepL instance could not be created.. debug and try again');
-
-            throw new \Exception($exception->getMessage());
+        } catch (Exception $exception) {
+            throw new Exception('DeepL instance could not be created.. debug: ' . $exception->getMessage());
         }
     }
     public function translate(string $word, string $language_target): array
     {
         try {
             $translate = $this->instance->translateText(
-                [$word],
+                [strtolower($word)],
                 null,
                 $language_target,
             );

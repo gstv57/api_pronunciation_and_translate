@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WordInvokeGetRequestValidation;
+use App\Http\Resources\WordGetResource;
 use App\Models\Word;
 use Exception;
 
@@ -13,9 +14,11 @@ class WordGetController extends Controller
     {
 
         try {
-            return Word::where('word_original', $request->query('word'))
+            $word = Word::where('word_original', $request->query('word'))
                 ->with('pronunciations')
-                ->first();
+                ->firstOrFail();
+
+            return new WordGetResource($word);
 
         } catch(Exception $exception) {
             return response()->json([
