@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\WordInvokeRequestValidation;
+use App\Http\Requests\WordInvokeStoreRequestValidation;
 use Exception;
 use App\Models\Word;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Contracts\PronunciationContract;
 use App\Services\AudioDownloaderService;
 
-class WordController extends Controller
+class WordStoreController extends Controller
 {
     protected $translator;
     protected $pronunciation;
@@ -23,7 +23,7 @@ class WordController extends Controller
         $this->pronunciation = app(PronunciationContract::class);
         $this->audio_downloader  = new AudioDownloaderService();
     }
-    public function __invoke(WordInvokeRequestValidation $request)
+    public function __invoke(WordInvokeStoreRequestValidation $request)
     {
         try {
             // translate word

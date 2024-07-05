@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pronunciation extends Model
 {
-    use HasFactory;
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'id',
+        'word_id'
+    ];
 
     protected $fillable = ['path_audio'];
 
