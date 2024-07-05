@@ -22,21 +22,26 @@ class TranslatorService implements TranslatorContract
             throw new \Exception($exception->getMessage());
         }
     }
-    public function translate(string $word, string $language_target): string
+    public function translate(string $word, string $language_target): array
     {
-        // word: hello world
-        // targetLang: pt-BR, en-US
         try {
             $translate = $this->instance->translateText(
                 [$word],
                 null,
                 $language_target,
             );
-            return $translate[0]->text;
+
+            return [
+                'text' => $translate[0]->text,
+                'detect_language' => $translate[0]->detectedSourceLang,
+            ];
 
         } catch (DeepLException $e) {
             Log::warning('Translate Error: ' . $e->getMessage());
-            return 'Error translating word..';
+            return [
+                'text' => 'error',
+                'detect_language' => 'error',
+            ];
         }
     }
 }

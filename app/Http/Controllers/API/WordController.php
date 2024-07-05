@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Requests\WordInvokeRequestValidation;
 use Exception;
 use App\Models\Word;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Contracts\TranslatorContract;
@@ -23,52 +23,45 @@ class WordController extends Controller
         $this->pronunciation = app(PronunciationContract::class);
         $this->audio_downloader  = new AudioDownloaderService();
     }
-    public function __invoke(Request $request)
+    public function __invoke(WordInvokeRequestValidation $request)
     {
-        $validated = $request->validate([
-            'word_original' => 'required|string',
-            'language' => 'required|string|max:2',
-            'target_language' => 'required|string|max:5',
-        ]);
         try {
-            // storage word model
-            $word = Word::create($validated);
-
             // translate word
-            $translated = $this->translator->translate($validated['word_original'], $validated['target_language']);
+            $translated = $this->translator->translate($request->input('word_original'), $request->input('target_language'));
 
-            // link audio
-            $audio_path = $this->pronunciation->getAudio($validated['word_original'], $validated['language'], 1);
+            // link audio pronunciation
+            $audio_path = $this->pronunciation->getAudio($request->input('word_original'), $translated['detect_language'], 1);
 
-            // download audio
-            $audio_content = $this->audio_downloader->download($audio_path, $validated['word_original']);
+            // download audio local
+            $audio_content = $this->audio_downloader->download($audio_path, $request->input('word_original'));
 
-            // storage s3
-            $audio_path = $this->saveAudioToS3($audio_content, $validated['word_original']);
+            // storage s3 and get name file
+            $audio_path = $this->saveAudioToS3($audio_content, $request->input('word_original'));
 
-            // update word model
-            $word->update([
-                'word_translated' => $translated,
+            // storage word model and pronunciation
+            $word = Word::create([
+                'word_original' => $request->input('word_original'),
+                'language' => $translated['detect_language'],
+                'word_translated' => $translated['text'],
             ]);
-
             $word->pronunciations()->create([
                 'path_audio' => $audio_path,
             ]);
 
-            $path_audio_s3 = Storage::disk('s3')->temporaryUrl($audio_path, now()->addMinutes(5));
+            $path_audio_s3 = Storage::disk('s3')->temporaryUrl($audio_path, now()->addMinutes(15));
 
             return response()->json([
-                'word_translated' => $translated,
+                'word_translated' => $translated['text'],
                 'audio_path' => $path_audio_s3,
-                'message' => 'Pronunciation link with expiration time of 5 minutes. Enjoy and listen!'
+                'message' => 'Pronunciation link with expiration time of 15 minutes. Enjoy and listen!'
             ]);
+
         } catch (Exception $exception) {
             return response()->json([
                 'error' => $exception->getMessage()
             ], 500);
         }
     }
-
     private function saveAudioToS3($audioPath, $word): ?string
     {
         try {

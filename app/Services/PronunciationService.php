@@ -3,14 +3,15 @@
 namespace App\Services;
 
 use App\Contracts\PronunciationContract;
+use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class PronunciationService implements PronunciationContract
 {
 
     private $api_key;
     private $proxy;
-
     public function __construct()
     {
         $this->api_key = getenv('FORVO_API_KEY');
@@ -33,8 +34,11 @@ class PronunciationService implements PronunciationContract
             $data = json_decode($response->getBody()->getContents(), true);
 
             return $data['items'][0]['pathmp3'];
-        } catch (\Exception $e) {
-            return 'error:' . $e->getMessage();
+
+        } catch (Exception $e) {
+            return 'error function:' . $e->getMessage();
+        } catch (GuzzleException $e) {
+            return 'error guzzle:' . $e->getMessage();
         }
     }
 }
