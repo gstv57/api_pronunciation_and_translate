@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WordGetByQuantityResource extends JsonResource
@@ -15,12 +14,12 @@ class WordGetByQuantityResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'word' => $this->word_original,
-            'translated' => $this->word_translated,
-            'language' => $this->language,
+            'word'           => $this->word_original,
+            'translated'     => $this->word_translated,
+            'language'       => $this->language,
             'pronunciations' => $this->pronunciations->map(function ($pronunciation) {
                 return [
-                    'link' => $pronunciation->pronunciationPathS3,
+                    'link'    => $pronunciation->pronunciationPathS3,
                     'expires' => now()->addMinutes(15)->format('d-m-y H:i:s'),
                 ];
             }),

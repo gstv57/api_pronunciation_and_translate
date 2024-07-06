@@ -14,6 +14,7 @@ class Pronunciation extends Model
         'id',
         'word_id',
     ];
+
     protected $fillable = ['path_audio'];
 
     public function word(): BelongsTo

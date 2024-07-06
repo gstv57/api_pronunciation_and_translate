@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\{DB, Log, Storage};
 class WordStoreController extends Controller
 {
     protected $translator;
+
     protected $pronunciation;
+
     protected $audio_downloader;
     public function __construct()
     {
@@ -32,7 +34,7 @@ class WordStoreController extends Controller
             if(empty($audio_path)) {
                 return response()->json([
                     'error' => 'Pronunciation not found, try another word.',
-                    'word' => $request->input('word_original'),
+                    'word'  => $request->input('word_original'),
                 ], 404);
             }
             // download audio local
@@ -55,6 +57,7 @@ class WordStoreController extends Controller
             $path_audio_s3 = Storage::disk('s3')->temporaryUrl($audio_path, now()->addMinutes(15));
             DB::commit();
             Log::info($request->input('word_original'));
+
             return response()->json([
                 'word_translated' => $translated['text'],
                 'audio_path'      => $path_audio_s3,
@@ -63,6 +66,7 @@ class WordStoreController extends Controller
 
         } catch (Exception $exception) {
             DB::rollBack();
+
             return response()->json([
                 'error' => $exception->getMessage(),
             ], 500);

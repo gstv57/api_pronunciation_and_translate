@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Contracts\FetchWordRandomContract;
 use App\Models\Word;
 use Exception;
-use Illuminate\Support\Facades\Http;
 
 class FetchWordRandomService implements FetchWordRandomContract
 {
@@ -27,6 +26,7 @@ class FetchWordRandomService implements FetchWordRandomContract
                     return strtolower('palavra');
                 }
                 $i++;
+
                 if($i == $tentativas) {
                     break;
                 }
@@ -35,6 +35,7 @@ class FetchWordRandomService implements FetchWordRandomContract
         } catch (Exception $e) {
             throw new Exception('FetchWordRandomService say: ' . $e->getMessage());
         }
+
         return '';
     }
 }

@@ -16,6 +16,7 @@ class FetchWordAndStorage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     private $generator;
     public function __construct()
     {
@@ -29,9 +30,9 @@ class FetchWordAndStorage implements ShouldQueue
                 $i = 0;
                 $i < 10;
                 $i++
-            ){
+            ) {
                 $response = Http::withOptions([
-                    'verify'      => false,
+                    'verify' => false,
                 ])->post("http://127.0.0.1:8000/api/words", [
                     "word_original"   => $this->getWord(),
                     "target_language" => "pt-BR",
