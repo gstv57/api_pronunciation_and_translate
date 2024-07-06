@@ -24,13 +24,11 @@ class WordStoreController extends Controller
     public function __invoke(WordInvokeStoreRequestValidation $request)
     {
         try {
-            // translate word
             $translated = $this->translator->translate($request->input('word_original'), $request->input('target_language'));
 
             // link audio pronunciation
             $audio_path = $this->pronunciation->getAudio($request->input('word_original'), $translated['detect_language'], 1);
 
-            // verify audio path not string empty
             if(empty($audio_path)) {
                 return response()->json([
                     'error' => 'Pronunciation not found, try another word.',
