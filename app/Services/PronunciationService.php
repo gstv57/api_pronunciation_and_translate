@@ -10,7 +10,6 @@ use GuzzleHttp\Exception\GuzzleException;
 class PronunciationService implements PronunciationContract
 {
     private $api_key;
-
     private $proxy;
     public function __construct()
     {
@@ -35,6 +34,9 @@ class PronunciationService implements PronunciationContract
 
             $data = json_decode($response->getBody()->getContents(), true);
 
+            if (empty($data['items'][0]['pathmp3'])) {
+                return '';
+            }
             return $data['items'][0]['pathmp3'];
 
         } catch (Exception $e) {

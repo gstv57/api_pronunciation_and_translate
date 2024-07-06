@@ -8,14 +8,12 @@ use App\Http\Requests\WordInvokeStoreRequestValidation;
 use App\Models\Word;
 use App\Services\AudioDownloaderService;
 use Exception;
-use Illuminate\Support\Facades\{Log, Storage};
+use Illuminate\Support\Facades\{DB, Log, Storage};
 
 class WordStoreController extends Controller
 {
     protected $translator;
-
     protected $pronunciation;
-
     protected $audio_downloader;
     public function __construct()
     {
@@ -31,6 +29,14 @@ class WordStoreController extends Controller
 
             // link audio pronunciation
             $audio_path = $this->pronunciation->getAudio($request->input('word_original'), $translated['detect_language'], 1);
+
+            // verify audio path not string empty
+            if(empty($audio_path)) {
+                return response()->json([
+                    'error' => 'Pronunciation not found, try another word.',
+                    'word' => $request->input('word_original'),
+                ], 404);
+            }
             // download audio local
             $audio_content = $this->audio_downloader->download($audio_path, $request->input('word_original'));
 
@@ -38,6 +44,7 @@ class WordStoreController extends Controller
             $audio_path = $this->saveAudioToS3($audio_content, $request->input('word_original'));
 
             // storage word model and pronunciation
+            DB::beginTransaction();
             $word = Word::create([
                 'word_original'   => $request->input('word_original'),
                 'language'        => $translated['detect_language'],
@@ -48,7 +55,8 @@ class WordStoreController extends Controller
             ]);
 
             $path_audio_s3 = Storage::disk('s3')->temporaryUrl($audio_path, now()->addMinutes(15));
-
+            DB::commit();
+            Log::info($request->input('word_original'));
             return response()->json([
                 'word_translated' => $translated['text'],
                 'audio_path'      => $path_audio_s3,
@@ -56,6 +64,7 @@ class WordStoreController extends Controller
             ]);
 
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json([
                 'error' => $exception->getMessage(),
             ], 500);
