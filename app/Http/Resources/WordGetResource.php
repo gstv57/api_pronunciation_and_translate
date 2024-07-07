@@ -21,7 +21,7 @@ class WordGetResource extends JsonResource
             'pronunciations' => $this->pronunciations->map(function ($pronunciation) {
                 return [
                     'link'    => $pronunciation->pronunciationPathS3,
-                    'expires' => now()->addMinutes(15)->format('d-m-y H:i:s'),
+                    'expires' => now()->addMinutes(20)->format('d-m-y H:i:s'),
                 ];
             }),
         ];
