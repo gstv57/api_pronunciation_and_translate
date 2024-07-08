@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
 use App\Contracts\FetchWordRandomContract;
 use App\Models\WordWrong;
+use GuzzleHttp\Client;
 
 class FetchWordRandomService implements FetchWordRandomContract
 {
-
     public $guzzle;
 
     public function __construct()
@@ -36,14 +35,14 @@ class FetchWordRandomService implements FetchWordRandomContract
                     'sec-fetch-site'         => 'same-origin',
                     'user-agent'             => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
                     'x-kl-saas-ajax-request' => 'Ajax_Request',
-                    'x-requested-with'       => 'XMLHttpRequest'
+                    'x-requested-with'       => 'XMLHttpRequest',
                 ],
                 'form_params' => [
-                    'type' => '',
-                    'num_words' => "$quantity",
+                    'type'        => '',
+                    'num_words'   => "$quantity",
                     'num_letters' => '',
                     'starts_with' => '',
-                    'ends_with' => ''
+                    'ends_with'   => '',
                 ],
                 'proxy' => getenv('PROXYSCRAPE'),
             ]);
@@ -52,17 +51,19 @@ class FetchWordRandomService implements FetchWordRandomContract
 
             if ($response['status'] == 'ok') {
                 $result = [];
+
                 foreach ($response['result'] as $word) {
                     $result[] = $word['word'];
                 }
 
                 foreach ($result as $wordContent) {
                     $exists = WordWrong::where('content', $wordContent)->exists();
+
                     if (!$exists) {
                         WordWrong::insert([
-                            'content' => $wordContent,
+                            'content'    => $wordContent,
                             'created_at' => now(),
-                            'updated_at' => now()
+                            'updated_at' => now(),
                         ]);
                     }
                 }

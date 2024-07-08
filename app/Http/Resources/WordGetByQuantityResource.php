@@ -25,9 +25,9 @@ class WordGetByQuantityResource extends JsonResource
                     'expires' => now()->addMinutes(20)->format('d-m-y H:i:s'),
                 ];
             }),
-            'words_wrongs'   => WordWrong::getWordWrong(4, $this->word_original)->map(function ($word) {
+            'words_wrongs' => WordWrong::getWordWrong(4, $this->word_original)->map(function ($word) {
                 return [
-                    'word'     => $word->content,
+                    'word' => $word->content,
                 ];
             }),
         ];

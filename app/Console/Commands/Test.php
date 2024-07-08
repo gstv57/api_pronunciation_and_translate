@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\FetchWordsWrongJob;
+use Illuminate\Console\Command;
 
 class Test extends Command
 {

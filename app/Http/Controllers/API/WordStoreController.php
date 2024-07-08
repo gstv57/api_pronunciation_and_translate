@@ -53,10 +53,8 @@ class WordStoreController extends Controller
             $word->pronunciations()->create([
                 'path_audio' => $audio_path,
             ]);
-
             $path_audio_s3 = Storage::disk('s3')->temporaryUrl($audio_path, now()->addMinutes(15));
             DB::commit();
-            Log::info($request->input('word_original'));
 
             return response()->json([
                 'word_translated' => $translated['text'],
