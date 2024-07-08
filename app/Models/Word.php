@@ -22,4 +22,8 @@ class Word extends Model
     {
         return $this->hasMany(Pronunciation::class);
     }
+    public function wordWrongs()
+    {
+        return $this->belongsToMany(Word::class, 'word_wrong_word');
+    }
 }

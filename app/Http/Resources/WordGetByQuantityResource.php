@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\WordWrong;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WordGetByQuantityResource extends JsonResource
@@ -22,6 +23,11 @@ class WordGetByQuantityResource extends JsonResource
                 return [
                     'link'    => $pronunciation->pronunciationPathS3,
                     'expires' => now()->addMinutes(20)->format('d-m-y H:i:s'),
+                ];
+            }),
+            'words_wrongs'   => WordWrong::getWordWrong(4, $this->word_original)->map(function ($word) {
+                return [
+                    'word'     => $word->content,
                 ];
             }),
         ];

@@ -4,5 +4,5 @@ namespace App\Contracts;
 
 interface FetchWordRandomContract
 {
-    public function fetchWordRandom(): string;
+    public function fetchWordRandom($quantity);
 }
