@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\API;
 
+
+namespace App\Http\Controllers\API;
+ini_set('max_execution_time', 120);
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WordGetByQuantityRequest;
 use App\Http\Resources\WordGetByQuantityResource;
